@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${book.title} + ' - 图书详情'">图书详情</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info span { color: #ecf0f1; }
+        .user-menu { position: relative; }
+        .user-menu-btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .user-menu-btn:hover { background: #2980b9; }
+        .user-dropdown { display: none; position: absolute; right: 0; top: 100%; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; z-index: 100; overflow: hidden; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: block; padding: 12px 15px; color: #2c3e50; text-decoration: none; border-bottom: 1px solid #f0f0f0; }
+        .user-dropdown a:hover { background: #f8f9fa; }
+        .user-dropdown a:last-child { border-bottom: none; }
+        .user-dropdown .logout { color: #e74c3c; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 15px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .info-item { padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .info-item label { color: #7f8c8d; font-size: 12px; display: block; margin-bottom: 5px; }
+        .info-item span { color: #2c3e50; font-size: 16px; }
+        .tags { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .tag { background: #3498db; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图书馆借阅与管理系统</h1>
+        <div class="header-right">
+            <div class="user-info">
+                <span>欢迎，<strong th:text="${user.name}">用户</strong></span>
+            </div>
+            <div class="user-menu">
+                <button class="user-menu-btn" onclick="toggleMenu()">个人中心</button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="/home">首页</a>
+                    <a href="/search">图书检索</a>
+                    <a href="/user/borrowHistory">借阅历史</a>
+                    <a href="/user/reservations">我的预约</a>
+                    <a href="/user/favorites">我的收藏</a>
+                    <a href="/user/reviews">我的评价</a>
+                    <a href="/user/messages">消息通知</a>
+                    <a href="/user/fines">罚款记录</a>
+                    <a href="/user/profile">个人信息</a>
+                    <a href="/logout" class="logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="/home">首页</a>
+        <a href="/search">图书检索</a>
+        <a href="/user/borrowHistory">借阅历史</a>
+        <a href="/user/reservations">我的预约</a>
+        <a href="/user/favorites">我的收藏</a>
+        <a href="/user/reviews">我的评价</a>
+        <a href="/user/messages">消息通知</a>
+        <a href="/user/fines">罚款记录</a>
+        <a href="/user/profile">个人信息</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2 th:text="${book.title}">图书详情</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>ISBN</label>
+                    <span th:text="${book.isbn}"></span>
+                </div>
+                <div class="info-item">
+                    <label>作者</label>
+                    <span th:text="${book.author}"></span>
+                </div>
+                <div class="info-item">
+                    <label>出版社</label>
+                    <span th:text="${book.publisher}"></span>
+                </div>
+                <div class="info-item">
+                    <label>出版日期</label>
+                    <span th:text="${book.publishDate}"></span>
+                </div>
+                <div class="info-item">
+                    <label>价格</label>
+                    <span th:text="${book.price}"></span>
+                </div>
+                <div class="info-item">
+                    <label>分类</label>
+                    <span th:text="${book.category?.categoryName}"></span>
+                </div>
+                <div class="info-item">
+                    <label>总数量</label>
+                    <span th:text="${book.totalCount}"></span>
+                </div>
+                <div class="info-item">
+                    <label>可借数量</label>
+                    <span th:text="${book.availableCount}"></span>
+                </div>
+                <div class="info-item">
+                    <label>位置</label>
+                    <span th:text="${book.location}"></span>
+                </div>
+            </div>
+            <div th:if="${book.detail != null}" style="margin-top: 20px;">
+                <h3>详细信息</h3>
+                <div class="info-grid" style="margin-top: 10px;">
+                    <div class="info-item">
+                        <label>页数</label>
+                        <span th:text="${book.detail.pageCount}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>语言</label>
+                        <span th:text="${book.detail.language}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>版次</label>
+                        <span th:text="${book.detail.edition}"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>装帧</label>
+                        <span th:text="${book.detail.format}"></span>
+                    </div>
+                </div>
+                <div style="margin-top: 15px;">
+                    <label>摘要</label>
+                    <p th:text="${book.detail.summary}" style="margin-top: 5px; line-height: 1.6;"></p>
+                </div>
+            </div>
+            <div th:if="${tags != null && !tags.isEmpty()}" style="margin-top: 20px;">
+                <h3>标签</h3>
+                <div class="tags">
+                    <span class="tag" th:each="tag : ${tags}" th:text="${tag.tag?.tagName}"></span>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <a href="/search" class="btn btn-primary">返回检索</a>
+                <a href="/home" class="btn btn-primary">返回首页</a>
+                <form th:action="@{'/user/borrow/' + ${book.id}}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-primary" style="background: #27ae60;">立即借阅</button>
+                </form>
+                <form th:action="@{'/user/reserve/' + ${book.id}}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-primary" style="background: #f39c12;">预约</button>
+                </form>
+                <form th:action="@{'/user/toggleFavorite/' + ${book.id}}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-primary" style="background: #e74c3c;" th:text="${isFavorite} ? '取消收藏' : '收藏'"></button>
+                </form>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>发表评价</h2>
+            <form action="/user/addReview" method="post">
+                <input type="hidden" name="bookId" th:value="${book.id}">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>评分</label>
+                    <select name="rating" style="padding: 8px; width: 100px;">
+                        <option value="5">5星 - 非常好</option>
+                        <option value="4">4星 - 不错</option>
+                        <option value="3">3星 - 一般</option>
+                        <option value="2">2星 - 较差</option>
+                        <option value="1">1星 - 很差</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label>评价内容</label>
+                    <textarea name="content" rows="4" style="width: 100%; padding: 8px;" placeholder="请输入您的评价..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">提交评价</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h2>读者评价</h2>
+            <div th:each="review : ${reviews}" style="padding: 15px; border-bottom: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="font-weight: bold;" th:text="${review.reader?.name}"></span>
+                    <span style="color: #f39c12;" th:each="i : ${#numbers.sequence(1, review.rating)}">&#9733;</span>
+                </div>
+                <p th:text="${review.content}" style="color: #555; line-height: 1.6;"></p>
+                <p style="color: #999; font-size: 12px; margin-top: 5px;" th:text="${review.createTime}"></p>
+            </div>
+            <div th:if="${reviews == null || reviews.isEmpty()}" style="text-align: center; color: #7f8c8d; padding: 20px;">
+                暂无评价
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>读者管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 10px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin: 2px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .search-form { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-form input, .search-form select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        .search-form button { padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>读者管理</h1>
+        <form action="/admin/logout" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">退出登录</button>
+        </form>
+    </div>
+    <div class="nav">
+        <a href="/admin/dashboard">首页</a>
+        <a href="/admin/list">管理员管理</a>
+        <a href="/reader/list">读者管理</a>
+        <a href="/book/list">图书管理</a>
+        <a href="/borrow/list">借阅管理</a>
+        <a href="/reservation/list">预约管理</a>
+        <a href="/category/list">分类管理</a>
+        <a href="/announcement/list">公告管理</a>
+        <a href="/admin/reviews/manage">评价管理</a>
+        <a href="/admin/fines/manage">罚款管理</a>
+        <a href="/">前台首页</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>读者列表</h2>
+            <form class="search-form" action="/reader/search" method="get">
+                <input type="text" name="name" placeholder="姓名">
+                <input type="text" name="department" placeholder="院系">
+                <button type="submit">搜索</button>
+            </form>
+            <a href="/reader/add" class="btn btn-success" style="margin-bottom: 15px;">添加读者</a>
+            <table>
+                <thead>
+                    <tr>
+                        <th>读者号</th>
+                        <th>姓名</th>
+                        <th>性别</th>
+                        <th>电话</th>
+                        <th>邮箱</th>
+                        <th>院系</th>
+                        <th>最大借阅数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reader : ${readers}">
+                        <td th:text="${reader.readerNo}"></td>
+                        <td th:text="${reader.name}"></td>
+                        <td th:text="${reader.gender}"></td>
+                        <td th:text="${reader.phone}"></td>
+                        <td th:text="${reader.email}"></td>
+                        <td th:text="${reader.department}"></td>
+                        <td th:text="${reader.maxBorrowCount}"></td>
+                        <td>
+                            <a th:href="@{/reader/edit/{id}(id=${reader.id})}" class="btn btn-primary">编辑</a>
+                            <a th:href="@{/reader/delete/{id}(id=${reader.id})}" class="btn btn-danger" onclick="return confirm('确定删除？')">删除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

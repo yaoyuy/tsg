@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>管理后台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 10px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        .stat-card h3 { color: #7f8c8d; font-size: 14px; margin-bottom: 10px; }
+        .stat-card .number { font-size: 36px; color: #2c3e50; font-weight: bold; }
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .menu-item { background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; text-decoration: none; color: #2c3e50; }
+        .menu-item:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .menu-item h3 { margin-bottom: 10px; }
+        .menu-item p { color: #7f8c8d; font-size: 14px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-danger { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>管理后台</h1>
+        <form action="/admin/logout" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">退出登录</button>
+        </form>
+    </div>
+    <div class="nav">
+        <a href="/admin/dashboard">首页</a>
+        <a href="/admin/list">管理员管理</a>
+        <a href="/reader/list">读者管理</a>
+        <a href="/book/list">图书管理</a>
+        <a href="/borrow/list">借阅管理</a>
+        <a href="/reservation/list">预约管理</a>
+        <a href="/category/list">分类管理</a>
+        <a href="/announcement/list">公告管理</a>
+        <a href="/admin/overdue">逾期管理</a>
+        <a href="/admin/statistics">统计报表</a>
+        <a href="/admin/reviews/manage">评价管理</a>
+        <a href="/admin/fines/manage">罚款管理</a>
+        <a href="/">前台首页</a>
+    </div>
+    <div class="container">
+        <div class="stats">
+            <div class="stat-card">
+                <h3>图书总数</h3>
+                <div class="number" th:text="${totalBooks}">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>活跃读者</h3>
+                <div class="number" th:text="${totalReaders}">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>借阅记录</h3>
+                <div class="number" th:text="${totalBorrows}">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>可借图书</h3>
+                <div class="number" th:text="${availableBooks}">0</div>
+            </div>
+        </div>
+        <div class="menu-grid">
+            <a href="/reader/list" class="menu-item">
+                <h3>读者管理</h3>
+                <p>增删改查读者信息</p>
+            </a>
+            <a href="/book/list" class="menu-item">
+                <h3>图书管理</h3>
+                <p>增删改查图书信息</p>
+            </a>
+            <a href="/borrow/list" class="menu-item">
+                <h3>借阅管理</h3>
+                <p>管理借阅记录</p>
+            </a>
+            <a href="/reservation/list" class="menu-item">
+                <h3>预约管理</h3>
+                <p>管理预约记录</p>
+            </a>
+            <a href="/category/list" class="menu-item">
+                <h3>分类管理</h3>
+                <p>管理图书分类</p>
+            </a>
+            <a href="/announcement/list" class="menu-item">
+                <h3>公告管理</h3>
+                <p>发布和管理公告</p>
+            </a>
+            <a href="/admin/overdue" class="menu-item">
+                <h3>逾期管理</h3>
+                <p>查看逾期借阅</p>
+            </a>
+            <a href="/admin/statistics" class="menu-item">
+                <h3>统计报表</h3>
+                <p>热门图书排行</p>
+            </a>
+            <a href="/admin/reviews/manage" class="menu-item">
+                <h3>评价管理</h3>
+                <p>管理读者评价</p>
+            </a>
+            <a href="/admin/fines/manage" class="menu-item">
+                <h3>罚款管理</h3>
+                <p>管理罚款记录</p>
+            </a>
+            <a href="/admin/list" class="menu-item">
+                <h3>管理员管理</h3>
+                <p>管理管理员账号</p>
+            </a>
+            <a href="/" class="menu-item">
+                <h3>前台首页</h3>
+                <p>查看前台首页</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>数据预处理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 10px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #2c3e50; }
+        .form-group textarea, .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-primary:hover { background: #2980b9; }
+        .result { background: #f8f9fa; padding: 15px; border-radius: 4px; margin-top: 10px; white-space: pre-wrap; font-family: monospace; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>数据预处理</h1>
+        <form action="/admin/logout" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">退出登录</button>
+        </form>
+    </div>
+    <div class="nav">
+        <a href="/admin/dashboard">首页</a>
+        <a href="/admin/list">管理员管理</a>
+        <a href="/reader/list">读者管理</a>
+        <a href="/book/list">图书管理</a>
+        <a href="/borrow/list">借阅管理</a>
+        <a href="/reservation/list">预约管理</a>
+        <a href="/category/list">分类管理</a>
+        <a href="/announcement/list">公告管理</a>
+        <a href="/preprocess/page">数据预处理</a>
+        <a href="/">前台首页</a>
+    </div>
+    <div class="container">
+        <div class="grid">
+            <div class="section">
+                <h2>数据去重</h2>
+                <div class="form-group">
+                    <label>输入数据（用逗号分隔）</label>
+                    <textarea id="dedupInput" rows="3">Java,Python,Java,MySQL,Python,Java,C++,MySQL</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="deduplicate()">去重</button>
+                <div id="dedupResult" class="result"></div>
+            </div>
+
+            <div class="section">
+                <h2>异常值过滤</h2>
+                <div class="form-group">
+                    <label>输入数据（用逗号分隔）</label>
+                    <textarea id="outlierInput" rows="3">10,12,11,13,100,12,11,10,12,11</textarea>
+                </div>
+                <div class="form-group">
+                    <label>阈值（标准差倍数）</label>
+                    <input type="number" id="threshold" value="2" step="0.5">
+                </div>
+                <button class="btn btn-primary" onclick="filterOutliers()">过滤</button>
+                <div id="outlierResult" class="result"></div>
+            </div>
+
+            <div class="section">
+                <h2>文本分词</h2>
+                <div class="form-group">
+                    <label>输入文本</label>
+                    <textarea id="tokenizeInput" rows="3">Java programming is fun and Python is also great for data science</textarea>
+                </div>
+                <button class="btn btn-primary" onclick="tokenize()">分词</button>
+                <div id="tokenizeResult" class="result"></div>
+            </div>
+
+            <div class="section">
+                <h2>关键词提取</h2>
+                <div class="form-group">
+                    <label>输入文本</label>
+                    <textarea id="keywordInput" rows="3">Java is a programming language. Java is used for web development. Python is also popular for data science and machine learning.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>提取数量</label>
+                    <input type="number" id="topN" value="5">
+                </div>
+                <button class="btn btn-primary" onclick="extractKeywords()">提取</button>
+                <div id="keywordResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deduplicate() {
+            var data = document.getElementById('dedupInput').value;
+            fetch('/preprocess/deduplicate', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'data=' + encodeURIComponent(data)
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('dedupResult').innerHTML = 
+                    '原始数量: ' + data.originalCount + '\n去重后: ' + data.resultCount + '\n结果: ' + data.result.join(', ');
+            });
+        }
+
+        function filterOutliers() {
+            var data = document.getElementById('outlierInput').value;
+            var threshold = document.getElementById('threshold').value;
+            fetch('/preprocess/filter-outliers', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'data=' + encodeURIComponent(data) + '&threshold=' + threshold
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('outlierResult').innerHTML = 
+                    '原始: ' + data.original.join(', ') + '\n过滤后: ' + data.result.join(', ');
+            });
+        }
+
+        function tokenize() {
+            var text = document.getElementById('tokenizeInput').value;
+            fetch('/preprocess/tokenize', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'text=' + encodeURIComponent(text)
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('tokenizeResult').innerHTML = 
+                    '分词结果: ' + data.tokens.join(', ') + '\n\n过滤停用词后: ' + data.filteredTokens.join(', ') + '\n\n关键词频率:\n' + 
+                    Object.entries(data.keywords).map(([k,v]) => k + ': ' + v).join('\n');
+            });
+        }
+
+        function extractKeywords() {
+            var text = document.getElementById('keywordInput').value;
+            var topN = document.getElementById('topN').value;
+            fetch('/preprocess/keywords', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'text=' + encodeURIComponent(text) + '&topN=' + topN
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('keywordResult').innerHTML = 
+                    '关键词:\n' + Object.entries(data.keywords).map(([k,v]) => k + ': ' + v).join('\n');
+            });
+        }
+    </script>
+</body>
+</html>

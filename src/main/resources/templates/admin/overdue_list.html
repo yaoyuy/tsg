@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>逾期管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 10px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .overdue { color: #e74c3c; font-weight: bold; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>逾期管理</h1>
+        <form action="/admin/logout" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-primary" style="background: #e74c3c;">退出登录</button>
+        </form>
+    </div>
+    <div class="nav">
+        <a href="/admin/dashboard">首页</a>
+        <a href="/admin/list">管理员管理</a>
+        <a href="/reader/list">读者管理</a>
+        <a href="/book/list">图书管理</a>
+        <a href="/borrow/list">借阅管理</a>
+        <a href="/reservation/list">预约管理</a>
+        <a href="/category/list">分类管理</a>
+        <a href="/announcement/list">公告管理</a>
+        <a href="/admin/overdue">逾期管理</a>
+        <a href="/admin/statistics">统计报表</a>
+        <a href="/admin/reviews/manage">评价管理</a>
+        <a href="/admin/fines/manage">罚款管理</a>
+        <a href="/">前台首页</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>逾期借阅记录</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>读者</th>
+                        <th>书名</th>
+                        <th>借阅日期</th>
+                        <th>应还日期</th>
+                        <th>逾期天数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${overdue}">
+                        <td th:text="${record.reader?.name}"></td>
+                        <td th:text="${record.book?.title}"></td>
+                        <td th:text="${record.borrowDate}"></td>
+                        <td class="overdue" th:text="${record.dueDate}"></td>
+                        <td class="overdue" th:text="${T(java.time.LocalDate).now().toEpochDay() - record.dueDate.toEpochDay()} + '天'"></td>
+                    </tr>
+                    <tr th:if="${overdue == null || overdue.isEmpty()}">
+                        <td colspan="5" style="text-align: center; color: #7f8c8d;">暂无逾期记录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

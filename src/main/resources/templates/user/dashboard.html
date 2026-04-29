@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info span { color: #ecf0f1; }
+        .user-menu { position: relative; }
+        .user-menu-btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .user-menu-btn:hover { background: #2980b9; }
+        .user-dropdown { display: none; position: absolute; right: 0; top: 100%; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; z-index: 100; overflow: hidden; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: block; padding: 12px 15px; color: #2c3e50; text-decoration: none; border-bottom: 1px solid #f0f0f0; }
+        .user-dropdown a:hover { background: #f8f9fa; }
+        .user-dropdown a:last-child { border-bottom: none; }
+        .user-dropdown .logout { color: #e74c3c; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 15px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .info-item { padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .info-item label { color: #7f8c8d; font-size: 12px; display: block; margin-bottom: 5px; }
+        .info-item span { color: #2c3e50; font-size: 16px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin: 2px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .status-0 { color: #e74c3c; }
+        .status-1 { color: #27ae60; }
+        .menu-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .menu-item { background: white; padding: 30px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); cursor: pointer; text-decoration: none; color: #2c3e50; }
+        .menu-item:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .menu-item h3 { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图书馆借阅与管理系统</h1>
+        <div class="header-right">
+            <div class="user-info">
+                <span>欢迎，<strong th:text="${user.name}">用户</strong></span>
+            </div>
+            <div class="user-menu">
+                <button class="user-menu-btn" onclick="toggleMenu()">个人中心</button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="/home">首页</a>
+                    <a href="/search">图书检索</a>
+                    <a href="/user/borrowHistory">借阅历史</a>
+                    <a href="/user/reservations">我的预约</a>
+                    <a href="/user/favorites">我的收藏</a>
+                    <a href="/user/reviews">我的评价</a>
+                    <a href="/user/messages">消息通知</a>
+                    <a href="/user/fines">罚款记录</a>
+                    <a href="/user/profile">个人信息</a>
+                    <a href="/logout" class="logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="/home">首页</a>
+        <a href="/search">图书检索</a>
+        <a href="/user/borrowHistory">借阅历史</a>
+        <a href="/user/reservations">我的预约</a>
+        <a href="/user/favorites">我的收藏</a>
+        <a href="/user/reviews">我的评价</a>
+        <a href="/user/messages">消息通知</a>
+        <a href="/user/fines">罚款记录</a>
+        <a href="/user/profile">个人信息</a>
+    </div>
+    <div class="container">
+        <div class="menu-grid">
+            <a href="/search" class="menu-item">
+                <h3>图书检索</h3>
+                <p>查找并借阅图书</p>
+            </a>
+            <a href="/user/borrowHistory" class="menu-item">
+                <h3>借阅历史</h3>
+                <p>查看借阅记录</p>
+            </a>
+            <a href="/user/reservations" class="menu-item">
+                <h3>我的预约</h3>
+                <p>管理预约记录</p>
+            </a>
+            <a href="/user/favorites" class="menu-item">
+                <h3>我的收藏</h3>
+                <p>查看收藏图书</p>
+            </a>
+            <a href="/user/reviews" class="menu-item">
+                <h3>我的评价</h3>
+                <p>查看我的评价</p>
+            </a>
+            <a href="/user/messages" class="menu-item">
+                <h3>消息通知</h3>
+                <p th:if="${unreadCount > 0}" th:text="'(' + ${unreadCount} + '条未读)'" style="color: #e74c3c;"></p>
+                <p th:unless="${unreadCount > 0}">查看消息</p>
+            </a>
+            <a href="/user/fines" class="menu-item">
+                <h3>罚款记录</h3>
+                <p th:if="${unpaidFine > 0}" th:text="'未缴: ¥' + ${unpaidFine}" style="color: #e74c3c;"></p>
+                <p th:unless="${unpaidFine > 0}">无未缴罚款</p>
+            </a>
+            <a href="/user/profile" class="menu-item">
+                <h3>个人信息</h3>
+                <p>修改个人资料</p>
+            </a>
+        </div>
+
+        <div class="section">
+            <h2>当前借阅</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>书名</th>
+                        <th>借阅日期</th>
+                        <th>应还日期</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${activeBorrows}" th:if="${record.status == 0}">
+                        <td th:text="${record.book?.title}"></td>
+                        <td th:text="${record.borrowDate}"></td>
+                        <td th:text="${record.dueDate}"></td>
+                        <td><span class="status-0">借阅中</span></td>
+                    </tr>
+                    <tr th:if="${activeBorrows == null || activeBorrows.isEmpty()}">
+                        <td colspan="4" style="text-align: center; color: #7f8c8d;">暂无借阅记录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>我的预约</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>书名</th>
+                        <th>预约日期</th>
+                        <th>过期日期</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reservation : ${reservations}" th:if="${reservation.status == 0}">
+                        <td th:text="${reservation.book?.title}"></td>
+                        <td th:text="${reservation.reserveDate}"></td>
+                        <td th:text="${reservation.expireDate}"></td>
+                        <td>预约中</td>
+                    </tr>
+                    <tr th:if="${reservations == null || reservations.isEmpty()}">
+                        <td colspan="4" style="text-align: center; color: #7f8c8d;">暂无预约记录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

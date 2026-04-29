@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>评价管理</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 10px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin: 2px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .stars { color: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>评价管理</h1>
+        <form action="/admin/logout" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">退出登录</button>
+        </form>
+    </div>
+    <div class="nav">
+        <a href="/admin/dashboard">首页</a>
+        <a href="/admin/list">管理员管理</a>
+        <a href="/reader/list">读者管理</a>
+        <a href="/book/list">图书管理</a>
+        <a href="/borrow/list">借阅管理</a>
+        <a href="/reservation/list">预约管理</a>
+        <a href="/category/list">分类管理</a>
+        <a href="/announcement/list">公告管理</a>
+        <a href="/admin/reviews/manage">评价管理</a>
+        <a href="/admin/fines/manage">罚款管理</a>
+        <a href="/">前台首页</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>评价列表</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>读者</th>
+                        <th>图书</th>
+                        <th>评分</th>
+                        <th>评价内容</th>
+                        <th>评价时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="review : ${reviews}">
+                        <td th:text="${review.id}"></td>
+                        <td th:text="${review.reader?.name}"></td>
+                        <td th:text="${review.book?.title}"></td>
+                        <td>
+                            <span class="stars" th:each="i : ${#numbers.sequence(1, review.rating)}">&#9733;</span>
+                            <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}">&#9734;</span>
+                        </td>
+                        <td th:text="${review.content}"></td>
+                        <td th:text="${review.createTime}"></td>
+                        <td>
+                            <form th:action="@{/admin/reviews/delete/{id}(id=${review.id})}" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('确定删除该评价？')">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${reviews == null || reviews.isEmpty()}">
+                        <td colspan="7" style="text-align: center; color: #7f8c8d;">暂无评价记录</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

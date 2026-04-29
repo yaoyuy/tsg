@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>统计报表</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 10px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; color: #2c3e50; }
+        .rank { font-weight: bold; color: #e74c3c; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>统计报表</h1>
+        <form action="/admin/logout" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-primary" style="background: #e74c3c;">退出登录</button>
+        </form>
+    </div>
+    <div class="nav">
+        <a href="/admin/dashboard">首页</a>
+        <a href="/admin/list">管理员管理</a>
+        <a href="/reader/list">读者管理</a>
+        <a href="/book/list">图书管理</a>
+        <a href="/borrow/list">借阅管理</a>
+        <a href="/reservation/list">预约管理</a>
+        <a href="/category/list">分类管理</a>
+        <a href="/announcement/list">公告管理</a>
+        <a href="/admin/overdue">逾期管理</a>
+        <a href="/admin/statistics">统计报表</a>
+        <a href="/admin/reviews/manage">评价管理</a>
+        <a href="/admin/fines/manage">罚款管理</a>
+        <a href="/">前台首页</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>热门图书排行（Top 10）</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>书名</th>
+                        <th>作者</th>
+                        <th>分类</th>
+                        <th>借阅次数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="book, iterStat : ${popularBooks}">
+                        <td class="rank" th:text="${iterStat.count}"></td>
+                        <td th:text="${book.title}"></td>
+                        <td th:text="${book.author}"></td>
+                        <td th:text="${book.category?.categoryName}"></td>
+                        <td th:text="${book.borrowCount}"></td>
+                    </tr>
+                    <tr th:if="${popularBooks == null || popularBooks.isEmpty()}">
+                        <td colspan="5" style="text-align: center; color: #7f8c8d;">暂无数据</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

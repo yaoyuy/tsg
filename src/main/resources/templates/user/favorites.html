@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的收藏</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info span { color: #ecf0f1; }
+        .user-menu { position: relative; }
+        .user-menu-btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .user-menu-btn:hover { background: #2980b9; }
+        .user-dropdown { display: none; position: absolute; right: 0; top: 100%; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; z-index: 100; overflow: hidden; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: block; padding: 12px 15px; color: #2c3e50; text-decoration: none; border-bottom: 1px solid #f0f0f0; }
+        .user-dropdown a:hover { background: #f8f9fa; }
+        .user-dropdown a:last-child { border-bottom: none; }
+        .user-dropdown .logout { color: #e74c3c; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 15px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .book-card { background: #f8f9fa; padding: 15px; border-radius: 8px; }
+        .book-card h3 { margin-bottom: 10px; color: #2c3e50; }
+        .book-card p { margin: 5px 0; color: #7f8c8d; font-size: 14px; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin: 2px; }
+        .btn-primary { background: #3498db; color: white; }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-success { background: #27ae60; color: white; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图书馆借阅与管理系统</h1>
+        <div class="header-right">
+            <div class="user-info">
+                <span>欢迎，<strong th:text="${user.name}">用户</strong></span>
+            </div>
+            <div class="user-menu">
+                <button class="user-menu-btn" onclick="toggleMenu()">个人中心</button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="/home">首页</a>
+                    <a href="/search">图书检索</a>
+                    <a href="/user/borrowHistory">借阅历史</a>
+                    <a href="/user/reservations">我的预约</a>
+                    <a href="/user/favorites">我的收藏</a>
+                    <a href="/user/reviews">我的评价</a>
+                    <a href="/user/messages">消息通知</a>
+                    <a href="/user/fines">罚款记录</a>
+                    <a href="/user/profile">个人信息</a>
+                    <a href="/logout" class="logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="/home">首页</a>
+        <a href="/search">图书检索</a>
+        <a href="/user/borrowHistory">借阅历史</a>
+        <a href="/user/reservations">我的预约</a>
+        <a href="/user/favorites">我的收藏</a>
+        <a href="/user/reviews">我的评价</a>
+        <a href="/user/messages">消息通知</a>
+        <a href="/user/fines">罚款记录</a>
+        <a href="/user/profile">个人信息</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>收藏列表</h2>
+            <div class="book-grid">
+                <div class="book-card" th:each="fav : ${favorites}">
+                    <h3 th:text="${fav.book?.title}"></h3>
+                    <p>作者：<span th:text="${fav.book?.author}"></span></p>
+                    <p>出版社：<span th:text="${fav.book?.publisher}"></span></p>
+                    <p>
+                        <span th:if="${fav.book?.availableCount > 0}" style="color: #27ae60;">可借阅</span>
+                        <span th:unless="${fav.book?.availableCount > 0}" style="color: #e74c3c;">已借完</span>
+                    </p>
+                    <div>
+                        <a th:href="@{'/book/detail/' + ${fav.book?.id}}" class="btn btn-primary">查看详情</a>
+                        <form th:action="@{'/user/borrow/' + ${fav.book?.id}}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-success">借阅</button>
+                        </form>
+                        <form th:action="@{'/user/toggleFavorite/' + ${fav.book?.id}}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">取消收藏</button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${favorites == null || favorites.isEmpty()}" style="grid-column: 1 / -1; text-align: center; color: #7f8c8d; padding: 50px;">
+                    暂无收藏图书
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

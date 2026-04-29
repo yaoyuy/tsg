@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>我的评价</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft YaHei', sans-serif; background: #f5f5f5; }
+        .header { background: #2c3e50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 22px; }
+        .header-right { display: flex; align-items: center; gap: 15px; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info span { color: #ecf0f1; }
+        .user-menu { position: relative; }
+        .user-menu-btn { background: #3498db; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; }
+        .user-menu-btn:hover { background: #2980b9; }
+        .user-dropdown { display: none; position: absolute; right: 0; top: 100%; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 180px; z-index: 100; overflow: hidden; }
+        .user-dropdown.show { display: block; }
+        .user-dropdown a { display: block; padding: 12px 15px; color: #2c3e50; text-decoration: none; border-bottom: 1px solid #f0f0f0; }
+        .user-dropdown a:hover { background: #f8f9fa; }
+        .user-dropdown a:last-child { border-bottom: none; }
+        .user-dropdown .logout { color: #e74c3c; }
+        .nav { background: #34495e; padding: 10px; }
+        .nav a { color: white; text-decoration: none; margin: 0 15px; padding: 8px 15px; display: inline-block; }
+        .nav a:hover { background: #2c3e50; border-radius: 4px; }
+        .container { max-width: 1000px; margin: 20px auto; padding: 20px; }
+        .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .section h2 { margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .review-item { padding: 15px; border-bottom: 1px solid #eee; }
+        .review-item:last-child { border-bottom: none; }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .review-book { font-weight: bold; color: #2c3e50; }
+        .review-rating { color: #f39c12; }
+        .review-content { color: #555; line-height: 1.6; }
+        .review-date { color: #999; font-size: 12px; margin-top: 5px; }
+        .btn { padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
+        .btn-primary { background: #3498db; color: white; }
+        .stars { color: #f39c12; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>图书馆借阅与管理系统</h1>
+        <div class="header-right">
+            <div class="user-info">
+                <span>欢迎，<strong th:text="${user.name}">用户</strong></span>
+            </div>
+            <div class="user-menu">
+                <button class="user-menu-btn" onclick="toggleMenu()">个人中心</button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="/home">首页</a>
+                    <a href="/search">图书检索</a>
+                    <a href="/user/borrowHistory">借阅历史</a>
+                    <a href="/user/reservations">我的预约</a>
+                    <a href="/user/favorites">我的收藏</a>
+                    <a href="/user/reviews">我的评价</a>
+                    <a href="/user/messages">消息通知</a>
+                    <a href="/user/fines">罚款记录</a>
+                    <a href="/user/profile">个人信息</a>
+                    <a href="/logout" class="logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <a href="/home">首页</a>
+        <a href="/search">图书检索</a>
+        <a href="/user/borrowHistory">借阅历史</a>
+        <a href="/user/reservations">我的预约</a>
+        <a href="/user/favorites">我的收藏</a>
+        <a href="/user/reviews">我的评价</a>
+        <a href="/user/messages">消息通知</a>
+        <a href="/user/fines">罚款记录</a>
+        <a href="/user/profile">个人信息</a>
+    </div>
+    <div class="container">
+        <div class="section">
+            <h2>评价列表</h2>
+            <div class="review-item" th:each="review : ${reviews}">
+                <div class="review-header">
+                    <span class="review-book" th:text="${review.book?.title}"></span>
+                    <span class="review-rating">
+                        <span class="stars" th:each="i : ${#numbers.sequence(1, review.rating)}">&#9733;</span>
+                        <span th:each="i : ${#numbers.sequence(review.rating + 1, 5)}">&#9734;</span>
+                    </span>
+                </div>
+                <div class="review-content" th:text="${review.content}"></div>
+                <div class="review-date" th:text="${review.createTime}"></div>
+            </div>
+            <div th:if="${reviews == null || reviews.isEmpty()}" style="text-align: center; color: #7f8c8d; padding: 50px;">
+                暂无评价记录
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
